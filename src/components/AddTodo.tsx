@@ -1,36 +1,23 @@
-import React from 'react';
-import { TodoContext } from '../context/TodoProvider';
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../redux/store';
+import { addTodo } from '../redux/todoSlice';
 
-interface AddTodoState {
-    text: string;
-}
-class AddTodo extends React.Component<{}, AddTodoState> {
-    static contextType = TodoContext;
-    declare context: React.ContextType<typeof TodoContext>;
-    
-    state: AddTodoState = {
-        text: '',
-    };
 
-    handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        this.setState({ text: e.target.value });
-    };
-    handleAdd = () => {
-        this.context.addTodo(this.state.text);
-        this.setState({ text: '' });
-    };
-    render() {
-        return (
-            <div>
-                <input
-                    type="text"
-                    value={this.state.text}
-                    onChange={this.handleChange}
-                />
-                <button onClick={this.handleAdd}>Add</button>
-            </div>
-        );
-    }
-}
+const AddTodo: React.FC = () => {
+    const [text, setText] = useState('');
+    const dispatch: AppDispatch = useDispatch();
+    return (
+        <><input type="text" value={text}
+            onChange={e => setText(e.target.value)} />
+            <button onClick={() => {
+                dispatch(addTodo(text));
+                setText('');
+            }}>Add</button>
+        </>
+
+
+    );
+};
 
 export default AddTodo;

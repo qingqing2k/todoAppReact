@@ -1,75 +1,56 @@
-import React from 'react';
-import { Todo } from '../components/Todo';
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { toggleTodo, editTodo, deleteTodo } from '../redux/todoSlice';
+import { AppDispatch } from '../redux/store';
 import EditTodoModal from './EditTodo';
-import { TodoContext } from '../context/TodoProvider';
-
 
 interface TodoItemProps {
-    todo: Todo;
+    id: number;
+    text: string;
+    completed: boolean;
 }
 
-interface TodoItemState {
-    isEditing: boolean;
-    editText: string;
-}
-
-class TodoItem extends React.Component<TodoItemProps, TodoItemState> {
-    state: TodoItemState = {
-        isEditing: false,
-        editText: this.props.todo.text,
-    };
-    static contextType = TodoContext;
-    declare context: React.ContextType<typeof TodoContext>;
-
-    handleEdit = () => {
-        this.setState({ isEditing: true });
-    };
-
-    handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        this.setState({ editText: e.target.value });
-    };
-
-    handleSave = () => {
-        this.context.editTodo(this.props.todo.id, this.state.editText);
-        this.setState({ isEditing: false });
-    };
-
-
-
-    handleDelete = () => {
-        this.context.deleteTodo(this.props.todo.id);
-    };
-    handleCancel = () => {
-        this.setState({
-            isEditing: false,
-            editText: this.props.todo.text
-        });
-    };
-    render() {
-
-        return (
+const TodoItem: React.FC<TodoItemProps> = ({ id, text, completed }) => {
+    const [isEditing, setIsEditing] = useState(false);
+    const [editText, setEditText] = useState(text);
+    const dispatch: AppDispatch = useDispatch();
+    const handleEdit = () => {
+        setIsEditing(true);
+    }
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setEditText(e.target.value);
+    }
+    const handleSave = () => {
+        dispatch(editTodo({ id, text: editText }));
+        setIsEditing(false);
+    }
+    const handleCancel = () => {
+        setIsEditing(false);
+        setEditText(text);
+    }
+    return (
+        <div>
             <div style={{ display: 'flex', alignItems: 'center' }}>
                 <input type="checkbox"
-                    checked={this.props.todo.completed}
-                    onChange={() => this.context.toggleTodo(this.props.todo.id)} />
+                    checked={completed}
+                    onChange={() => dispatch(toggleTodo(id))} />
                 <span style={{
-                    textDecoration: this.props.todo.completed ? 'line-through' : 'none',
+                    textDecoration: completed ? 'line-through' : 'none',
                     marginRight: '10px',
                 }}>
-                    {this.props.todo.text}
+                    {text}
                 </span>
-                <button onClick={this.handleEdit} style={{ marginRight: '5px' }}>Edit</button>
-                <button onClick={() => this.context.deleteTodo(this.props.todo.id)}>Delete</button>
-                {this.state.isEditing &&
+                <button onClick={handleEdit} style={{ marginRight: '5px' }}>Edit</button>
+                <button onClick={() => dispatch(deleteTodo(id))}>Delete</button>
+                {isEditing &&
                     (<EditTodoModal
-                        text={this.state.editText}
-                        onChange={this.handleChange}
-                        onSave={this.handleSave}
-                        onCancel={this.handleCancel} />)}
+                        text={editText}
+                        onChange={handleChange}
+                        onSave={handleSave}
+                        onCancel={handleCancel} />)}
             </div>
-        );
-    }
-}
+        </div>
+    );
+};
+
 export default TodoItem;
-
-

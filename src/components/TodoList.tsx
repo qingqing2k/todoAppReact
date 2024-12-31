@@ -1,22 +1,22 @@
+// src/components/TodoList.tsx
 import React from 'react';
+import { useSelector } from 'react-redux';
+import { RootState } from '../redux/store';
+
 import TodoItem from './TodoItem';
-import { TodoContext } from '../context/TodoProvider';
 
+const TodoList: React.FC = () => {
+    const todos = useSelector((state: RootState) => state.todos.todos);
 
+    return (
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <ul>
+                {todos.map(todo => (
+                    <TodoItem key={todo.id} id={todo.id} text={todo.text} completed={todo.completed} />
+                ))}
+            </ul>
+        </div>
+    );
+};
 
-
-export default class TodoList extends React.Component {
-     static contextType = TodoContext;
-        declare context: React.ContextType<typeof TodoContext>;
-    render() {
-        return (
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                <ul>
-                    {this.context.todos.map(todo => (
-                        <TodoItem key={todo.id} todo={todo} />
-                    ))}
-                </ul>
-            </div>
-        );
-    }
-}
+export default TodoList;
