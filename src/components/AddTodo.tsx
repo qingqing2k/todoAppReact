@@ -1,30 +1,30 @@
 import React from 'react';
-
-interface AddTodoProps {
-    onAdd: (text: string) => void;
-}
+import { TodoContext } from '../context/TodoProvider';
 
 interface AddTodoState {
-    newTask: string;
-
+    text: string;
 }
-class AddTodo extends React.Component<AddTodoProps, AddTodoState> {
+class AddTodo extends React.Component<{}, AddTodoState> {
+    static contextType = TodoContext;
+    declare context: React.ContextType<typeof TodoContext>;
+    
     state: AddTodoState = {
-        newTask: '',
+        text: '',
     };
+
     handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        this.setState({ newTask: e.target.value });
+        this.setState({ text: e.target.value });
     };
     handleAdd = () => {
-        this.props.onAdd(this.state.newTask);
-        this.setState({ newTask: '' });
+        this.context.addTodo(this.state.text);
+        this.setState({ text: '' });
     };
     render() {
         return (
             <div>
                 <input
                     type="text"
-                    value={this.state.newTask}
+                    value={this.state.text}
                     onChange={this.handleChange}
                 />
                 <button onClick={this.handleAdd}>Add</button>

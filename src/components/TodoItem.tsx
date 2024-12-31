@@ -1,12 +1,11 @@
 import React from 'react';
 import { Todo } from '../components/Todo';
 import EditTodoModal from './EditTodo';
+import { TodoContext } from '../context/TodoProvider';
+
 
 interface TodoItemProps {
     todo: Todo;
-    onEdit: (id: number, text: string) => void;
-    onToggle: (id: number) => void;
-    onDelete: (id: number) => void;
 }
 
 interface TodoItemState {
@@ -19,6 +18,8 @@ class TodoItem extends React.Component<TodoItemProps, TodoItemState> {
         isEditing: false,
         editText: this.props.todo.text,
     };
+    static contextType = TodoContext;
+    declare context: React.ContextType<typeof TodoContext>;
 
     handleEdit = () => {
         this.setState({ isEditing: true });
@@ -29,16 +30,14 @@ class TodoItem extends React.Component<TodoItemProps, TodoItemState> {
     };
 
     handleSave = () => {
-        this.props.onEdit(this.props.todo.id, this.state.editText);
+        this.context.editTodo(this.props.todo.id, this.state.editText);
         this.setState({ isEditing: false });
     };
 
-    handleToggle = () => {
-        this.props.onToggle(this.props.todo.id);
-    };
+
 
     handleDelete = () => {
-        this.props.onDelete(this.props.todo.id);
+        this.context.deleteTodo(this.props.todo.id);
     };
     handleCancel = () => {
         this.setState({
@@ -49,18 +48,18 @@ class TodoItem extends React.Component<TodoItemProps, TodoItemState> {
     render() {
 
         return (
-            <div style={{ display: 'flex', alignItems: 'center'}}>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
                 <input type="checkbox"
                     checked={this.props.todo.completed}
-                    onChange={() => this.props.onToggle(this.props.todo.id)} />
+                    onChange={() => this.context.toggleTodo(this.props.todo.id)} />
                 <span style={{
                     textDecoration: this.props.todo.completed ? 'line-through' : 'none',
                     marginRight: '10px',
                 }}>
                     {this.props.todo.text}
                 </span>
-                <button onClick={this.handleEdit} style={{marginRight: '5px'}}>Edit</button>
-                <button onClick={() => this.props.onDelete(this.props.todo.id)}>Delete</button>
+                <button onClick={this.handleEdit} style={{ marginRight: '5px' }}>Edit</button>
+                <button onClick={() => this.context.deleteTodo(this.props.todo.id)}>Delete</button>
                 {this.state.isEditing &&
                     (<EditTodoModal
                         text={this.state.editText}
