@@ -1,17 +1,18 @@
 // src/features/todos/todosSlice.ts
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-interface Todo {
+interface ITodo {
     id: number;
     text: string;
     completed: boolean;
+    isSelect: boolean;
 }
 
-interface TodosState {
-    todos: Todo[];
+interface ITodosState {
+    todos: ITodo[];
 }
 
-const initialState: TodosState = {
+const initialState: ITodosState = {
     todos: [],
 };
 
@@ -20,10 +21,11 @@ const todosSlice = createSlice({
     initialState,
     reducers: {
         addTodo: (state, action: PayloadAction<string>) => {
-            const newTodo: Todo = {
+            const newTodo: ITodo = {
                 id: Date.now(),
                 text: action.payload,
                 completed: false,
+                isSelect: false,
             };
             state.todos.push(newTodo);
         },
@@ -31,6 +33,12 @@ const todosSlice = createSlice({
             const todo = state.todos.find(todo => todo.id === action.payload);
             if (todo) {
                 todo.completed = !todo.completed;
+            }
+        },
+        toggleSelectTodo: (state, action: PayloadAction<number>) => {
+            const todo = state.todos.find(todo => todo.id === action.payload);
+            if (todo) {
+                todo.isSelect = !todo.isSelect;
             }
         },
         editTodo: (state, action: PayloadAction<{ id: number, text: string }>) => {
@@ -42,8 +50,17 @@ const todosSlice = createSlice({
         deleteTodo: (state, action: PayloadAction<number>) => {
             state.todos = state.todos.filter(todo => todo.id !== action.payload);
         },
+        deleteMultipleTodos: (state) => {
+            state.todos = state.todos.filter(todo => !todo.isSelect);
+        },
+        resetSelectTodos: (state) => {
+            state.todos.forEach(todo => {
+                todo.isSelect = false;
+            });
+        },
     }
 });
 
-export const { addTodo, toggleTodo, editTodo, deleteTodo } = todosSlice.actions;
+export const { addTodo, toggleTodo, editTodo, deleteTodo, toggleSelectTodo, deleteMultipleTodos, resetSelectTodos } = todosSlice.actions;
+export type { ITodosState, ITodo };
 export default todosSlice.reducer;

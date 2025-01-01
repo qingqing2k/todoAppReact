@@ -1,13 +1,11 @@
 import React from 'react';
 
-interface IEditTodoModalProps {
-    text: string;
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    onSave: () => void;
+interface DeleteConfirmModalProps {
+    onConfirm: () => void;
     onCancel: () => void;
 }
 
-const EditTodoModal: React.FC<IEditTodoModalProps> = ({ text, onChange, onSave, onCancel }) => {
+const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({ onConfirm, onCancel }) => {
     return (
         <div
             style={{
@@ -30,19 +28,13 @@ const EditTodoModal: React.FC<IEditTodoModalProps> = ({ text, onChange, onSave, 
                     borderRadius: '4px'
                 }}
             >
-                <h3>Edit Todo</h3>
-                <input
-                    type="text"
-                    value={text}
-                    onChange={onChange}
-                />
-                <div>
-                    <button onClick={onSave}>Save</button>
-                    <button onClick={onCancel}>Cancel</button>
-                </div>
+                <h3>Xác nhận xóa</h3>
+                <p>Bạn có chắc muốn xóa không?</p>
+                <button onClick={onConfirm}>Yes</button>
+                <button onClick={onCancel}>No</button>
             </div>
         </div>
     );
 };
 
-export default EditTodoModal;
+export default DeleteConfirmModal;
